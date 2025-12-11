@@ -5,40 +5,34 @@ const Users = require("../models/users");
 
 //註冊會員
 router.post("/addUser", async (req, res) => {
-  const { uname, email, pwd, id } = req.body;
-  const hasUser = await Users.findOne({ _id:id });
-  if (hasUser) {
-    const updateData = {};
-    updateData.uname = uname;
-    updateData.email = email;
-    if (pwd) updateData.pwd = pwd;
-    const updatedUser = await Users.findOneAndUpdate(
-      { _id: id },
-      { $set: updateData },
-      { new: true }
-    );
-    res.status(200).json({
-      success: true,
-      message: "會員資料更新成功。",
-      data: {
-        pwd: updatedUser.pwd,
-        name: updatedUser.uname,
-        email: updatedUser.email,
-      },
-    });
-  } else {
-    try {
-      const newUser = new Users({
-        uname: req.body.uname,
-        pwd: req.body.pwd,
-        email: req.body.email,
+  try {
+    const { uname, email, pwd } = req.body;
+    const hasUser = await Users.findOne({ email: email });
+    if (hasUser) {
+      const updateData = { uname, email: email };
+      if (pwd) updateData.pwd = pwd;
+      const updatedUser = await Users.findOneAndUpdate(
+        { email: email },
+        { $set: updateData },
+        { new: true }
+      );
+      res.status(200).json({
+        success: true,
+        message: "會員資料更新成功。",
+        data: {
+          pwd: updatedUser.pwd,
+          name: updatedUser.uname,
+          email: updatedUser.email,
+        },
       });
+    } else {
+      const newUser = new Users({ uname, pwd, email: email });
       await newUser.save();
-      res.status(201).json({ message: "✅ user added!", data: newUser });
-    } catch (error) {
-      console.log("❌ Error saving user:", error);
-      res.status(500).json({ error: error.message });
+      res.status(201).json({ message: "✅ user added!", data: hasUser });
     }
+  } catch (error) {
+    console.log("❌ Error saving user:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
