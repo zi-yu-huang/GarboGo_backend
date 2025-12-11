@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express"); //引入 Express：定義了您要使用哪個框架來建立伺服器。
 const cors = require("cors"); //引入 cors：定義了您的伺服器可以接受哪些來源（例如您的前端網頁）的請求，以避免瀏覽器的安全限制。
 const app = express(); //建立 app 實例：定義了一個可操作的伺服器核心，您之後所有的功能（接收請求、回傳資料等）都將在這個 app 上建立。
